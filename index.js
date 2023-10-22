@@ -28,18 +28,21 @@ async function run() {
 
         const productsCollection = client.db('productsDB').collection('products');
 
+        // Data read
         app.get('/products', async (req, res) => {
             const cursor = productsCollection.find();
             const result = await cursor.toArray();
             res.send(result);
         })
 
+        // Data create
         app.post('/products', async (req, res) => {
             const newProducts = req.body;
             const result = await productsCollection.insertOne(newProducts);
             res.send(result);
         })
 
+        // Data delete
         app.delete('/products/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId (id) }
