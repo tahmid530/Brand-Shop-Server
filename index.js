@@ -24,7 +24,7 @@ const client = new MongoClient(uri, {
 async function run() {
     try {
         // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
+        // await client.connect();
 
         const productsCollection = client.db('productsDB').collection('products');
 
@@ -50,7 +50,7 @@ async function run() {
             res.send(result);
         })
 
-        // Get single data using id
+        // Read single data using id
         app.get('/products/:id', async (req, res) => {
             const id = req.params.id;
             const query = { _id: new ObjectId (id) }
@@ -80,6 +80,34 @@ async function run() {
             const result = await productsCollection.updateOne(filter, products, options);
             res.send(result);
         })
+
+         // Cart data read
+         app.get('/carts', async (req, res) => {
+            const cursor = cartsCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        const cartsCollection = client.db('cartsDB').collection('carts');
+
+        // Cart data create
+        app.post('/carts', async (req, res) => {
+            const newCarts = req.body;
+            console.log(newCarts);
+            const result = await cartsCollection.insertOne(newCarts);
+            console.log(result);
+            res.send(result);
+        })
+
+         // Cart data delete
+         app.delete('/carts/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id:  id }
+            const result = await cartsCollection.deleteOne(query);
+            res.send(result);
+        })
+
+
 
         // Send a ping to confirm a successful connection
         await client.db("admin").command({ ping: 1 });
